@@ -10,6 +10,10 @@ interface Player {
   accuracy: number;
 }
 
+const PORT = Number(process.env.PORT) || 3001;
+const SENTENCE_DURATION_MS = 30 * 1000;
+const COUNTDOWN_INTERVAL_MS = 1000;
+
 const httpServer = http.createServer();
 const io = new Server(httpServer, {
   cors: {
@@ -19,13 +23,15 @@ const io = new Server(httpServer, {
 
 const players = new Map<string, Player>();
 let currentSentence = generateRandomSentence();
+let nextSentenceTime = Date.now() + SENTENCE_DURATION_MS;
 
-const SENTENCE_DURATION = 30 * 1000;
-let nextSentenceTime = Date.now() + SENTENCE_DURATION;
+function getTimeRemaining(): number {
+  return Math.max(0, Math.ceil((nextSentenceTime - Date.now()) / 1000));
+}
 
 function generateNewSentence() {
   currentSentence = generateRandomSentence();
-  nextSentenceTime = Date.now() + SENTENCE_DURATION;
+  nextSentenceTime = Date.now() + SENTENCE_DURATION_MS;
   
   players.forEach(player => {
     player.progress = 0;
@@ -36,13 +42,11 @@ function generateNewSentence() {
   io.emit("players:list", Array.from(players.values()));
 }
 
-setInterval(generateNewSentence, SENTENCE_DURATION);
+setInterval(generateNewSentence, SENTENCE_DURATION_MS);
 
-// Broadcast countdown every second
 setInterval(() => {
-  const timeRemaining = Math.max(0, Math.ceil((nextSentenceTime - Date.now()) / 1000));
-  io.emit("timer:countdown", timeRemaining);
-}, 1000);
+  io.emit("timer:countdown", getTimeRemaining());
+}, COUNTDOWN_INTERVAL_MS);
 
 function generateNickname() {
   return `Player${Math.floor(Math.random() * 100)}`;
@@ -61,7 +65,7 @@ io.on("connection", (socket) => {
   
   socket.emit("player:self", player);
   socket.emit("sentence:current", currentSentence);
-  socket.emit("timer:countdown", Math.max(0, Math.ceil((nextSentenceTime - Date.now()) / 1000)));
+  socket.emit("timer:countdown", getTimeRemaining());
   
   io.emit("players:list", Array.from(players.values()));
 
@@ -79,8 +83,6 @@ io.on("connection", (socket) => {
   });
 });
 
-const port = Number(process.env.PORT) || 3001;
-
-httpServer.listen(port, () => {
-  console.log(`Socket server listening on ${port}`);
+httpServer.listen(PORT, () => {
+  console.log(`Socket server listening on ${PORT}`);
 });

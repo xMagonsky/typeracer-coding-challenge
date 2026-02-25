@@ -4,3 +4,5 @@ export const COLORS = {
   incorrectBg: "#fecaca",
   pending: "#666",
 } as const;
+
+export const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";

@@ -1,14 +1,14 @@
 import { COLORS } from "../constants/game";
 
-interface TypedPhraseProps {
-  phrase: string;
+interface TypedSentenceProps {
+  sentence: string;
   userInput: string;
 }
 
-export function TypedPhrase({ phrase, userInput }: TypedPhraseProps) {
+export function TypedSentence({ sentence, userInput }: TypedSentenceProps) {
   return (
     <div className="bg-[#1a1a1a] p-8 rounded-lg mb-5 font-mono leading-relaxed">
-      {phrase.split("").map((char, index) => {
+      {sentence.split("").map((char, index) => {
         let color: string = COLORS.pending;
         let backgroundColor = "transparent";
 

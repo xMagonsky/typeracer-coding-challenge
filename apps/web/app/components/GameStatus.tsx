@@ -1,7 +1,7 @@
 interface GameStatusProps {
   isComplete: boolean;
   elapsedTime: number;
-  inputLength: number;
+  correctChars: number;
   sentenceLength: number;
   isTyping: boolean;
   wpm: number;
@@ -12,7 +12,7 @@ interface GameStatusProps {
 export function GameStatus({
   isComplete,
   elapsedTime,
-  inputLength,
+  correctChars,
   sentenceLength,
   isTyping,
   wpm,
@@ -28,7 +28,7 @@ export function GameStatus({
           </span>
         ) : (
           <span>
-            Progress: {inputLength} / {sentenceLength}
+            Progress: {correctChars} / {sentenceLength}
             {isTyping && (
               <>
                 <span className="ml-4 text-blue-400">Time: {elapsedTime}s</span>

@@ -92,10 +92,10 @@ export function TypeRacer() {
       setStartTime(Date.now());
     }
 
-    if (newInput === sentence && startTime) {
+    const chars = getCorrectCharacters(newInput, sentence);
+    if (chars === sentence.length && startTime) {
       setIsComplete(true);
       const timeInMs = Date.now() - startTime;
-      const chars = getCorrectCharacters(newInput, sentence);
 
       updateStats({
         wpm: calculateWPM(chars, timeInMs),
@@ -135,7 +135,7 @@ export function TypeRacer() {
           <GameStatus
             isComplete={isComplete}
             elapsedTime={elapsedTime}
-            inputLength={input.length}
+            correctChars={correctChars}
             sentenceLength={sentence.length}
             isTyping={!!startTime}
             wpm={currentWpm}

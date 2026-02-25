@@ -1,10 +1,4 @@
-interface Player {
-  id: string;
-  name: string;
-  progress: number;
-  wpm: number;
-  accuracy: number;
-}
+import { Player } from "../types/player";
 
 interface PlayerTableProps {
   players: Player[];

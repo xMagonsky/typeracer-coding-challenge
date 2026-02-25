@@ -3,12 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { TypedSentence } from "./TypedSentence";
 import { PlayerTable } from "./PlayerTable";
-
-const MOCK_PLAYERS = [
-  { id: "1", name: "user1", progress: 75, wpm: 82, accuracy: 97 },
-  { id: "2", name: "user2", progress: 55, wpm: 68, accuracy: 94 },
-  { id: "3", name: "user3", progress: 42, wpm: 71, accuracy: 91 },
-];
+import { useSocket } from "../hooks/useSocket";
 
 interface TypeRacerProps {
   sentence: string;
@@ -21,10 +16,18 @@ export function TypeRacer({ sentence, onNewSentence }: TypeRacerProps) {
   const [wpm, setWpm] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { players, currentPlayer, updatePlayer } = useSocket();
 
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    if (currentPlayer) {
+      const progress = Math.round((input.length / sentence.length) * 100);
+      updatePlayer({ progress, wpm });
+    }
+  }, [input, wpm, sentence.length, currentPlayer, updatePlayer]);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isComplete) return;
@@ -87,7 +90,7 @@ export function TypeRacer({ sentence, onNewSentence }: TypeRacerProps) {
         </div>
         </div>
 
-        <PlayerTable players={MOCK_PLAYERS} />
+        <PlayerTable players={players} />
       </div>
     </div>
   );

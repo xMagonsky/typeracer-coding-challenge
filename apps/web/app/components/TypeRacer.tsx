@@ -18,11 +18,19 @@ export function TypeRacer() {
   }, []);
 
   useEffect(() => {
-    if (currentPlayer) {
-      const progress = Math.round((input.length / sentence.length) * 100);
+    if (currentPlayer && sentence) {
+      let correctChars = 0;
+      for (let i = 0; i < input.length && i < sentence.length; i++) {
+        if (input[i] === sentence[i]) {
+          correctChars++;
+        } else {
+          break;
+        }
+      }
+      const progress = Math.round((correctChars / sentence.length) * 100);
       updatePlayer({ progress, wpm });
     }
-  }, [input, wpm, sentence.length, currentPlayer, updatePlayer]);
+  }, [input, wpm, sentence, currentPlayer, updatePlayer]);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isComplete) return;

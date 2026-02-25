@@ -7,6 +7,7 @@ export function useSocket() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
   const [sentence, setSentence] = useState<string>("");
+  const [countdown, setCountdown] = useState<number>(0);
 
   useEffect(() => {
     const socketInstance = io("http://localhost:3001");
@@ -23,6 +24,10 @@ export function useSocket() {
       setSentence(currentSentence);
     });
 
+    socketInstance.on("timer:countdown", (timeRemaining: number) => {
+      setCountdown(timeRemaining);
+    });
+
     socketRef.current = socketInstance;
 
     return () => {
@@ -36,11 +41,5 @@ export function useSocket() {
     }
   };
 
-  const requestNewSentence = () => {
-    if (socketRef.current) {
-      socketRef.current.emit("sentence:request-new");
-    }
-  };
-
-  return { players, currentPlayer, sentence, updatePlayer, requestNewSentence };
+  return { players, currentPlayer, sentence, countdown, updatePlayer };
 }

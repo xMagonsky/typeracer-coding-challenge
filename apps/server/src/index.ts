@@ -1,5 +1,6 @@
 import http from "http";
 import { Server } from "socket.io";
+import { generateRandomSentence } from "./sentenceGenerator";
 
 interface Player {
   id: string;
@@ -17,6 +18,7 @@ const io = new Server(httpServer, {
 });
 
 const players = new Map<string, Player>();
+let currentSentence = generateRandomSentence();
 
 function generateNickname() {
   return `Player${Math.floor(Math.random() * 100)}`;
@@ -34,6 +36,7 @@ io.on("connection", (socket) => {
   players.set(socket.id, player);
   
   socket.emit("player:self", player);
+  socket.emit("sentence:current", currentSentence);
   
   io.emit("players:list", Array.from(players.values()));
 
@@ -48,6 +51,11 @@ io.on("connection", (socket) => {
       Object.assign(player, data);
       io.emit("players:list", Array.from(players.values()));
     }
+  });
+
+  socket.on("sentence:request-new", () => {
+    currentSentence = generateRandomSentence();
+    io.emit("sentence:current", currentSentence);
   });
 });
 

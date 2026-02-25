@@ -6,6 +6,7 @@ export function useSocket() {
   const socketRef = useRef<Socket | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
+  const [sentence, setSentence] = useState<string>("");
 
   useEffect(() => {
     const socketInstance = io("http://localhost:3001");
@@ -16,6 +17,10 @@ export function useSocket() {
 
     socketInstance.on("players:list", (playersList: Player[]) => {
       setPlayers(playersList);
+    });
+
+    socketInstance.on("sentence:current", (currentSentence: string) => {
+      setSentence(currentSentence);
     });
 
     socketRef.current = socketInstance;
@@ -31,5 +36,11 @@ export function useSocket() {
     }
   };
 
-  return { players, currentPlayer, updatePlayer };
+  const requestNewSentence = () => {
+    if (socketRef.current) {
+      socketRef.current.emit("sentence:request-new");
+    }
+  };
+
+  return { players, currentPlayer, sentence, updatePlayer, requestNewSentence };
 }

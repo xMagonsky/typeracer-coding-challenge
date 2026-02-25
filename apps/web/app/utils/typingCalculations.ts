@@ -9,18 +9,18 @@ export function calculateWPM(characters: number, timeInMs: number): number {
 
 export function calculateAccuracy(userInput: string, targetText: string): number {
   if (userInput.length === 0) return 100;
-  
+
   let correctChars = 0;
   const maxLength = Math.min(userInput.length, targetText.length);
-  
+
   for (let i = 0; i < maxLength; i++) {
     if (userInput[i] === targetText[i]) {
       correctChars++;
     }
   }
-  
-  const accuracy = (correctChars / userInput.length) * 100;
-  
+
+  const accuracy = (correctChars / targetText.length) * 100;
+
   return Math.round(Math.max(0, Math.min(100, accuracy)));
 }
 

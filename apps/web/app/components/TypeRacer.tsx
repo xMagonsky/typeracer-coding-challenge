@@ -16,19 +16,40 @@ export function TypeRacer() {
   const [isComplete, setIsComplete] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const inputStateRef = useRef({ input: "", startTime: null as number | null, isComplete: false });
 
-  const resetGame = useCallback(() => {
+  useEffect(() => {
+    inputStateRef.current = { input, startTime, isComplete };
+  }, [input, startTime, isComplete]);
+
+  const { stats, updateStats } = usePlayerStats();
+
+  const saveRoundStats = useCallback((typedInput: string, roundStartTime: number | null, roundSentence: string, wasComplete: boolean) => {
+    if (!roundStartTime || typedInput.length === 0 || wasComplete) return;
+
+    const timeInMs = Date.now() - roundStartTime;
+    const chars = getCorrectCharacters(typedInput, roundSentence);
+
+    updateStats({
+      wpm: calculateWPM(chars, timeInMs),
+      accuracy: calculateAccuracy(typedInput, roundSentence),
+    });
+  }, [updateStats]);
+
+  const resetGame = useCallback((previousSentence: string) => {
+    const { input: currentInput, startTime: currentStartTime, isComplete: currentIsComplete } = inputStateRef.current;
+    saveRoundStats(currentInput, currentStartTime, previousSentence, currentIsComplete);
+
     setInput("");
     setStartTime(null);
     setIsComplete(false);
     setElapsedTime(0);
     setTimeout(() => inputRef.current?.focus(), 0);
-  }, []);
+  }, [saveRoundStats]);
 
   const { players, currentPlayer, sentence, countdown, updatePlayer } = useSocket({
     onNewSentence: resetGame,
   });
-  const { stats, updateStats } = usePlayerStats();
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -53,9 +74,13 @@ export function TypeRacer() {
 
   useEffect(() => {
     if (currentPlayer && sentence) {
-      updatePlayer({ progress, wpm: currentWpm, accuracy: currentAccuracy });
+      updatePlayer({
+        progress,
+        avgWpm: stats.averageWPM,
+        avgAccuracy: stats.averageAccuracy,
+      });
     }
-  }, [progress, currentWpm, currentAccuracy, sentence, currentPlayer, updatePlayer]);
+  }, [progress, stats.averageWPM, stats.averageAccuracy, sentence, currentPlayer, updatePlayer]);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isComplete) return;
@@ -115,7 +140,14 @@ export function TypeRacer() {
             isTyping={!!startTime}
             wpm={currentWpm}
             accuracy={currentAccuracy}
-            onReset={resetGame}
+            onReset={() => {
+              saveRoundStats(input, startTime, sentence, isComplete);
+              setInput("");
+              setStartTime(null);
+              setIsComplete(false);
+              setElapsedTime(0);
+              inputRef.current?.focus();
+            }}
           />
         </div>
 

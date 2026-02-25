@@ -4,7 +4,7 @@ import { Player } from "../types/player";
 import { SOCKET_URL } from "../constants/game";
 
 interface UseSocketOptions {
-  onNewSentence?: () => void;
+  onNewSentence?: (previousSentence: string) => void;
 }
 
 export function useSocket({ onNewSentence }: UseSocketOptions = {}) {
@@ -30,13 +30,13 @@ export function useSocket({ onNewSentence }: UseSocketOptions = {}) {
     });
 
     socketInstance.on("sentence:current", (currentSentence: string) => {
-      setSentence(currentSentence);
-
-      if (isFirstSentenceRef.current) {
+      setSentence((prev) => {
+        if (!isFirstSentenceRef.current) {
+          onNewSentenceRef.current?.(prev);
+        }
         isFirstSentenceRef.current = false;
-      } else {
-        onNewSentenceRef.current?.();
-      }
+        return currentSentence;
+      });
     });
 
     socketInstance.on("timer:countdown", (timeRemaining: number) => {

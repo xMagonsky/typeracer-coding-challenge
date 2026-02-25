@@ -2,12 +2,13 @@ import http from "http";
 import { Server } from "socket.io";
 import { generateRandomSentence } from "./sentenceGenerator";
 
+
 interface Player {
   id: string;
   name: string;
   progress: number;
-  wpm: number;
-  accuracy: number;
+  avgWpm: number;
+  avgAccuracy: number;
 }
 
 const PORT = Number(process.env.PORT) || 3001;
@@ -35,7 +36,6 @@ function generateNewSentence() {
   
   players.forEach(player => {
     player.progress = 0;
-    player.wpm = 0;
   });
   
   io.emit("sentence:current", currentSentence);
@@ -57,8 +57,8 @@ io.on("connection", (socket) => {
     id: socket.id,
     name: generateNickname(),
     progress: 0,
-    wpm: 0,
-    accuracy: 100,
+    avgWpm: 0,
+    avgAccuracy: 0,
   };
 
   players.set(socket.id, player);

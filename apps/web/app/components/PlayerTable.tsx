@@ -13,8 +13,8 @@ export function PlayerTable({ players }: PlayerTableProps) {
           <tr className="border-b-2 border-[#444]">
             <th className="text-[#999] p-3 text-left text-sm font-semibold">Player</th>
             <th className="text-[#999] p-3 text-left text-sm font-semibold">Progress</th>
-            <th className="text-[#999] p-3 text-left text-sm font-semibold">WPM</th>
-            <th className="text-[#999] p-3 text-left text-sm font-semibold">Accuracy</th>
+            <th className="text-[#999] p-3 text-left text-sm font-semibold">Avg WPM</th>
+            <th className="text-[#999] p-3 text-left text-sm font-semibold">Avg Accuracy</th>
           </tr>
         </thead>
         <tbody>
@@ -29,8 +29,8 @@ export function PlayerTable({ players }: PlayerTableProps) {
                   <span className="text-[#999] text-sm min-w-[45px]">{player.progress}%</span>
                 </div>
               </td>
-              <td className="text-white p-3 text-base">{player.wpm}</td>
-              <td className="text-white p-3 text-base">{player.accuracy}%</td>
+              <td className="text-blue-400 p-3 text-base">{player.avgWpm}</td>
+              <td className="text-blue-400 p-3 text-base">{player.avgAccuracy}%</td>
             </tr>
           ))}
         </tbody>

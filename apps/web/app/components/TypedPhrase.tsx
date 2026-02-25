@@ -7,16 +7,7 @@ interface TypedPhraseProps {
 
 export function TypedPhrase({ phrase, userInput }: TypedPhraseProps) {
   return (
-    <div
-      style={{
-        backgroundColor: "#1a1a1a",
-        padding: "30px",
-        borderRadius: "8px",
-        marginBottom: "20px",
-        fontFamily: "monospace",
-        lineHeight: "1.8",
-      }}
-    >
+    <div className="bg-[#1a1a1a] p-8 rounded-lg mb-5 font-mono leading-relaxed">
       {phrase.split("").map((char, index) => {
         let color: string = COLORS.pending;
         let backgroundColor = "transparent";
@@ -31,17 +22,7 @@ export function TypedPhrase({ phrase, userInput }: TypedPhraseProps) {
         }
 
         return (
-          <span
-            key={index}
-            style={{
-              color,
-              backgroundColor,
-              fontSize: "24px",
-              fontWeight: index === userInput.length ? "bold" : "normal",
-              textDecoration:
-                index === userInput.length ? "underline" : "none",
-            }}
-          >
+          <span key={index} className={`text-2xl ${index === userInput.length ? "font-bold underline" : "font-normal"}`} style={{ color, backgroundColor }}>
             {char}
           </span>
         );
